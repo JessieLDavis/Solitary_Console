@@ -1,7 +1,7 @@
 
 
 def newGameReset(gameObj):
-    playAgain = input(f"Would you like to play again?\ny = yes\t\tn = no\n>  ")
+    playAgain = input(f"\n\nWould you like to play again?\ny = yes\t\tn = no\n\n>  ")
     try:
         playAgain = playAgain.lower()
     except:

@@ -528,8 +528,8 @@ def playing(startVal,gameDeck):
 #[-##-][--][!!!][!!!][!!!][--][-##-]
 def SolitareMenu():
     print("Solitare\n[][][][]\n")
-    # startVal = input("Press x to begin:\n>  ").lower()
-    startVal = "x" #testing shortcut
+    startVal = input("Press x to begin:\n>  ").lower()
+    # startVal = "x" #testing shortcut
     if startVal == "x":
         startTime = datetime.now()
         gameDeck = HouseDeck()
@@ -544,19 +544,5 @@ def SolitareMenu():
     print(f"Time to complete: {finishTime}\nTotal moves: {gameDeck.moveCt}")
     newGameReset(SolitareMenu)
 
-# def newGameReset(gameObj):
-#     playAgain = input(f"Would you like to play again?\ny = yes\t\tn = no\n>  ")
-#     try:
-#         playAgain = playAgain.lower()
-#     except:
-#         playAgain = "error"
-#     if playAgain == "y":
-#         return gameObj()
-#     elif playAgain == "n":
-#         print("Thanks for playing!")
-#         return
-#     else:
-#         print("Invalid option. Please choose y or n.")
-#         return newGameReset(gameObj)
-# if __name__ == "__main__":
-SolitareMenu()
+if __name__ == "__main__":
+    SolitareMenu()
