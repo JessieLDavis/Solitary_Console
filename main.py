@@ -194,7 +194,7 @@ class HouseDeck():
                 v.append(playArea[num])
             v[-1].set_Playable(True) #card object
             counterCol +=1
-        print(self.deckPlayBoard)
+        # print(self.deckPlayBoard)
         self.deckHand = self.deckPlay[28:]
         return
     def check_AutoComplete(self):
@@ -248,12 +248,17 @@ class HouseDeck():
                 return True
         except IndexError:
             if cardMoving != cardMovingTarget:
-                for cardObj in cardMoving:
-                    self.deckPlayBoard[colName].append(cardObj)
+                if cardMovingTarget.cardNum == 13:
+                    for cardObj in cardMoving:
+                        self.deckPlayBoard[colName].append(cardObj)
+                    print(f"{cardMovingTarget} moved to {colName}")
+                    return True
             else:
-                self.deckPlayBoard[colName].append(cardMoving)
-            print(f"{cardMovingTarget} moved to {colName}")
-            return True
+                if cardMoving.cardNum == 13:
+                    self.deckPlayBoard[colName].append(cardMoving)
+                    print(f"{cardMovingTarget} moved to {colName}")
+                    return True
+                print("Only Kings can move to empty columns.")
         print("Viable move not found.")
         return False
     def check_Win(self):
