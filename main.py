@@ -3,6 +3,7 @@ from datetime import datetime
 from random import shuffle
 from newGame import newGameReset
 
+
 # def Solitare():
 class Card():
     def __init__(self, cardColorRed,cardSuit,cardNum,cardWritten):
@@ -14,6 +15,7 @@ class Card():
         self.shortForm = self.set_shortcut()
         self.playable = False
         self.visible = False
+        
     def set_Face(self):
         try:
             int(self.cardWritten)
@@ -59,6 +61,8 @@ class HouseDeck():
         self.playableList = None
         self.activeHand = []
         self.moveCt = 0
+
+
     def make_a_deck(self):
         deckSize = 52
         suitList = ["heart","diamond","spade","club"]
