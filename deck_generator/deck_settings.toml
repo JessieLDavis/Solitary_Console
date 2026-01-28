@@ -1,0 +1,67 @@
+[default]
+total_cards = 52
+hasJokers = false
+joker_count = 0
+colors = ['red','black']
+number_options = ['A','2','3','4','5','6','7','8','9','10','J','Q','K']
+face_cards = ['Ace','Jack','Queen','King']
+suits = ['heart','spade','diamond','club']
+suit_heart = ['red',"\U0001F499"]
+suit_spade = ['black',"\U0001F5E3"]
+suit_diamond = ['red',"\U0001F5E6"]
+suit_club = ['black',"\U0001F5E7"]
+
+[klondike]
+total_cards = 52
+hasJokers = false
+joker_count = 0
+colors = ['red','black']
+number_options = ['A','2','3','4','5','6','7','8','9','10','J','Q','K']
+face_cards = ['Ace','Jack','Queen','King']
+suits = ['heart','spade','diamond','club']
+suit_heart = ['red',"\U0001F499"]
+suit_spade = ['black',"\U0001F5E3"]
+suit_diamond = ['red',"\U0001F5E6"]
+suit_club = ['black',"\U0001F5E7"]
+board_locations = ['foundation','tableau','draw','waste']
+
+[euchre]
+total_cards = 24
+hasJokers = false
+joker_count = 0
+colors = ['red','black']
+number_options = ['9','10','J','Q','K','A']
+face_cards = ['Ace','Jack','Queen','King']
+suits = ['heart','spade','diamond','club']
+suit_heart = ['red',"\U0001F499"]
+suit_spade = ['black',"\U0001F5E3"]
+suit_diamond = ['red',"\U0001F5E6"]
+suit_club = ['black',"\U0001F5E7"]
+
+[old-maid]
+total_cards = 52
+hasJokers = false
+joker_count = 0
+colors = ['red','black']
+number_options = ['A','2','3','4','5','6','7','8','9','10','J','Q','K']
+face_cards = ['Ace','Jack','Queen','King']
+suits = ['heart','spade','diamond','club']
+suit_heart = ['red',"\U0001F499"]
+suit_spade = ['black',"\U0001F5E3"]
+suit_diamond = ['red',"\U0001F5E6"]
+suit_club = ['black',"\U0001F5E7"]
+remove_card = {'Q':{'count':1,'suit':'random'}}
+
+[rummy]
+total_cards = 52
+deck_count = 1
+hasJokers = false
+joker_count = 0
+colors = ['red','black']
+number_options = ['A','2','3','4','5','6','7','8','9','10','J','Q','K']
+face_cards = ['Ace','Jack','Queen','King']
+suits = ['heart','spade','diamond','club']
+suit_heart = ['red',"\U0001F499"]
+suit_spade = ['black',"\U0001F5E3"]
+suit_diamond = ['red',"\U0001F5E6"]
+suit_club = ['black',"\U0001F5E7"]

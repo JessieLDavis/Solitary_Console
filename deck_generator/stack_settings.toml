@@ -1,0 +1,28 @@
+[default]
+color_stack = 'any'
+number_stack = 'any'
+
+[foundations]
+number_stack = 'ascending'
+color_stack = 'equal'
+suit_stack = 'equal'
+moveEmpty = ['A']
+
+[tableau]
+number_stack = 'decending'
+color_stack = 'diff'
+suit_stack = 'color override'
+moveEmpty = ['K']
+
+[waste]
+number_stack = 'none'
+color_stack = 'none'
+suit_stack = 'none'
+moveEmpty = 'none'
+
+[draw]
+number_stack = 'none'
+color_stack = 'none'
+suit_stack = 'none'
+moveEmpty = 'none'
+
