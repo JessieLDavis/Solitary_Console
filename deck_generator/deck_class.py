@@ -23,7 +23,9 @@ class DeckObj:
         self.deck_type:str = deck_type
         self.settings: dict = {}
         self.stacking: dict = {}
+        self.board_locations:list = []
         self.full_deck:list = self.set_deck()
+
 
     def set_deck(self,shuffle:bool=True):
         #load settings
@@ -41,7 +43,10 @@ class DeckObj:
             raise KeyError
         self.settings = deck_type_settings
         #set stacking rules
-        board_locations = deck_type_settings.get('board_locations',[])
+        board_locations = self.board_locations
+        if len(board_locations) == 0:
+            board_locations = deck_type_settings.get('board_locations',[])
+            self.board_locations = board_locations
         board_dict = {}
         for loc in board_locations:
             loc_dict = stacking.get(loc)
@@ -68,13 +73,6 @@ class DeckObj:
         if shuffle:
             DeckObj.shuffle_deck(deck_list)
         return deck_list
-    
-
-        
-            
-            
-            
-
 
     def generate_deck(self,dt_set):
         """Using the passed deck template, generate card set."""
@@ -98,6 +96,120 @@ class DeckObj:
                 # card.set_stacking(b_set)
                 deck_list.append(card)
 
+    def check_valid_move(self,board_destination,moving_card,location_card)->bool:
+        if moving_card.visible == False:
+            #cant move nonvisible card / trapped
+            return False
+        if moving_card.movable == False:
+            return False
+        if location_card == moving_card:
+            #cant move onto same card
+            return False
+        if board_destination not in self.board_locations:
+            #could not find location
+            return False
+        loc_rules = self.stacking.get(board_destination)
+        if loc_rules == False:
+            #no rules found?
+            return False
+        if location_card is None:
+            #check if card can move to empty
+            moveEmpty_list = loc_rules.get('moveEmpty',[])
+            if moving_card.number in moveEmpty_list:
+                return True
+            else:
+                return False
+        color_move = self.translate_settings(loc_rules.get('color_stack'),self.settings.get('colors'),moving_card,'color')
+        if location_card.color not in color_move:
+            return False
+        
+        suit_move = self.translate_settings(loc_rules.get('suit_stack'),self.settings.get('suits'),moving_card,'suit')
+        if suit_move == 'color override':
+            pass
+        elif location_card.suit not in suit_move:
+            return False
+        
+        number_move = self.translate_numbers(loc_rules.get('number_stack'),self.settings.get('number_options',[]),moving_card,loc_rules.get('canWrap',[]))
+        if number_move == 'color override':
+            pass
+        elif number_move == None:
+            #joker card
+            pass
+        elif location_card.number not in number_move:
+            return False
+        
+        #if all pass
+        return True
+
+
+        
+
+    def translate_settings(self,category,opt_list,moving_card,target):
+        if moving_card.number == '0':
+            #is joker
+            return
+        if category is None or category == 'any':
+            return opt_list
+        if category == 'none':
+            return []
+        if category == 'equal':
+            return [o for o in opt_list if o.get(target) == moving_card.get(target)]
+        if category == 'diff':
+            return [o for o in opt_list if o.get(target) != moving_card.get(target)]
+        if category == 'color override':
+            if target == 'color':
+                #cant color override color rule
+                raise KeyError
+            else:
+                return category
+        return False
+    
+    def translate_numbers(self,category,opt_list,moving_card,canWrap_list):
+        last_val = None
+        next_val = None
+        if category == 'any':
+            return self.translate_settings(category,opt_list,moving_card,None)
+        if category == 'ascending' or category == 'descending':
+            
+            try:
+                card_loc = opt_list.index(moving_card.number)
+            except IndexError:
+                #Card num not in list?
+                raise IndexError
+            
+            try:
+                if category == 'ascending':
+                    next_val = opt_list[card_loc+1]
+                else:
+                    next_val = opt_list[card_loc-1]
+            except IndexError:
+                if moving_card.number not in canWrap_list:
+                    # raise IndexError
+                    #return None
+                    pass
+                else:
+                    if category == 'ascending':
+                        next_val = opt_list[0]
+                    else:
+                        next_val = opt_list[-1]
+            try:
+                if category == 'ascending':
+                    last_val = opt_list[card_loc-1]
+                else:
+                    last_val = opt_list[card_loc+1]
+            except IndexError:
+                if moving_card.number not in canWrap_list:
+                    # return None
+                    pass
+                else:
+                    if category == 'ascending':
+                        last_val = opt_list[-1]
+                    else:
+                        last_val = opt_list[0]
+        return [last_val,next_val]
+
+
+        
 
 
     @classmethod
@@ -132,77 +244,6 @@ class DeckObj:
             list_obj = list_B + list_A
         return list_obj
 
-    def check_valid_move(self,board_loc,moving_card,location_card=None):
-        loc_stack = self.stacking.get(board_loc,{})
-        if location_card is None:
-            moveEmpty = loc_stack.get('moveEmpty',[])
-            if isinstance(moveEmpty,list):
-                if moving_card.number in moveEmpty:
-                    return True
-                else:
-                    return False
-            elif moveEmpty == 'none':
-                return False
-            elif moveEmpty == 'any':
-                return True
-
-        color_list = self.settings.get('colors',[])
-        suit_list = self.settings.get('suits',[])
-        num_list = self.settings.get('number_options',[])
-        
-        color_stack = loc_stack.get('color_stack','any')
-        number_stack = loc_stack.get('number_stack','any')
-        suit_stack = loc_stack.get('suit_stack','any')
-        number_wrap = loc_stack.get('num_wrap',[])
-
-        iter_list = [
-            [number_wrap,num_list,moving_card.number,location_card.number],
-            [suit_stack,suit_list,moving_card.suit,location_card.suit],
-            [color_stack,color_list,moving_card.color,location_card.color]
-        ]
-
-
-        def get_options(focus,opt_list,moving_var,num_wrap = number_wrap)->list:
-            if focus == 'any':
-                return opt_list
-            elif focus == 'none':
-                return []
-            elif focus == 'color override':
-                return None
-            elif focus == 'equal':
-                return [var for var in opt_list if var == moving_var]
-            elif focus == 'diff':
-                return [var for var in opt_list if var != moving_var]
-            elif focus == 'ascending':
-                try:
-                    return opt_list[opt_list.index(moving_var)+1]
-                except IndexError:
-                    if moving_var in num_wrap:
-                        return [opt_list[0],]
-                    return []
-            elif focus == 'decending':
-                try:
-                    return opt_list[opt_list.index(moving_var)+1]
-                except IndexError:
-                    if moving_var in num_wrap:
-                        return [opt_list[-1],]
-                    return []
-            else:
-                print(f"{focus} was not recognized.")
-                raise KeyError
-        # for mov_var, focus,opt_list in [[moving_card.color]]
-        for focus, opt_list, m_var, l_var in iter_list:
-            opt = get_options(focus,opt_list,m_var,number_wrap)
-            if opt == None:
-                #color override
-                if moving_card.color == m_var:
-                    print("Can't color override the color variable")
-                    raise KeyError
-            elif isinstance(opt,list):
-                if l_var not in opt:
-                    return False
-        return True
-
 
 
 
@@ -217,6 +258,7 @@ class CardObj:
         self.name:str = self.get_name()
         self.emoji:str = suit_emoji
         self.visible:bool = False
+        self.canMove:bool = False
     
     def __str__(self):
         if self.color == 'red':
@@ -229,6 +271,8 @@ class CardObj:
         if self.visible:
             if self.number == '10':
                 interior = f"{self.number}{self.emoji}"
+            elif self.number == '0':
+                interior = f"~{self.emoji}~"
             else:
                 interior = f"{self.number}-{self.emoji}"
             return f"{RESET}[{c}{interior}{RESET}]"
@@ -256,6 +300,15 @@ class CardObj:
             else:
                 raise TypeError
         return f"{name} of {self.suit.title()}s"
+    
+    def set_visible(self,isVisible:bool=True):
+        self.visible = isVisible
+        #check movable?
+        return
+    
+    def set_movable(self,isMovable:bool=True):
+        self.movable = isMovable
+        return
 
 
 

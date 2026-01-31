@@ -18,11 +18,11 @@ moveEmpty = ['K']
 number_stack = 'none'
 color_stack = 'none'
 suit_stack = 'none'
-moveEmpty = 'none'
+moveEmpty = []
 
 [draw]
 number_stack = 'none'
 color_stack = 'none'
 suit_stack = 'none'
-moveEmpty = 'none'
+moveEmpty = []
 
