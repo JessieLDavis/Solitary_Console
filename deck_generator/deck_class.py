@@ -17,13 +17,13 @@ RESET = "\033[0m"
 
 class DeckObj:
     """This is the parent Deck object. This allows for shuffling, dealing, and some global functions."""
-    deck_settings = None
-    stacking_settings = None
+    # deck_settings = None
+    # stacking_settings = None
     def __init__(self,deck_type):
         self.deck_type:str = deck_type
-        self.settings: dict = {}
-        self.stacking: dict = {}
-        self.board_locations:list = []
+        # self.settings: dict = {}
+        # self.stacking: dict = {}
+        # self.board_locations:list = []
         self.full_deck:list = self.set_deck()
 
 
@@ -43,16 +43,16 @@ class DeckObj:
             raise KeyError
         self.settings = deck_type_settings
         #set stacking rules
-        board_locations = self.board_locations
-        if len(board_locations) == 0:
-            board_locations = deck_type_settings.get('board_locations',[])
-            self.board_locations = board_locations
-        board_dict = {}
-        for loc in board_locations:
-            loc_dict = stacking.get(loc)
-            if loc != None:
-                board_dict[loc] = loc_dict
-        self.stacking = board_dict
+        # board_locations = self.board_locations
+        # if len(board_locations) == 0:
+        #     board_locations = deck_type_settings.get('board_locations',[])
+        #     self.board_locations = board_locations
+        # board_dict = {}
+        # for loc in board_locations:
+        #     loc_dict = stacking.get(loc)
+        #     if loc != None:
+        #         board_dict[loc] = loc_dict
+        # self.stacking = board_dict
         
         #generate cards
         deck_count = deck_type_settings.get('deck_count')
@@ -95,7 +95,14 @@ class DeckObj:
                 card = CardObj(color,s,n,emoji)
                 # card.set_stacking(b_set)
                 deck_list.append(card)
+        return deck_list
 
+    
+    
+    
+    
+    
+    
     def check_valid_move(self,board_destination,moving_card,location_card)->bool:
         if moving_card.visible == False:
             #cant move nonvisible card / trapped
