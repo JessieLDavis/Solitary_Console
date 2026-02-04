@@ -6,6 +6,7 @@ import os
 import random
 from typing import List
 import pygame as pg
+import pygame_gui as pi
 
 if not pg.image.get_extended():
     raise SystemExit("Sorry, extended image module required.")
@@ -31,7 +32,9 @@ class Card():
         self.shortForm = self.set_shortcut()
         self.playable = False
         self.visible = False
-        
+        self.button = None
+        self.location = (0,0)
+
     def set_Face(self):
         try:
             int(self.cardWritten)
@@ -50,6 +53,13 @@ class Card():
             return self.shortForm
         else:
             return f"[```]"
+    # def get_button(self):
+    #     if self.visible:
+    #         card_button = pi.elements.UIButton(pg.Rect((100, 100), *CARD_SIZE),text=self.shortForm(),manager=manager)
+    #     else:
+    #         card_button = pi.elements.UIButton(pg.Rect((100, 100), *CARD_SIZE),text=self.shortForm(),manager=manager)
+    #         card_button._set_inactive()
+    #     return card_button
         
     def set_Playable(self,playable):
         if playable == True:
@@ -60,10 +70,16 @@ class Card():
             self.playable = False
         return
     def set_Visible(self,visible):
-        if visible == True:
-            self.visible = True
+        if self.visible == visible:
+            #noChange
+            pass
         else:
-            self.visible = False
+            if visible == True:
+                self.visible = True
+                # self.button.enable()
+            else:
+                self.visible = False
+                # self.button.disable()
         return
     
 
@@ -534,6 +550,104 @@ class HouseDeck():
         
         # print(self.acesBoard)
         return
+def playing_game(gameDeck):
+    if gameDeck.acesBoard == None:
+        gameDeck.set_gameBoard()
+        gameDeck.show_gameBoard()
+    else:
+        gameDeck.show_gameBoard()
+    if gameDeck.deckHand == [] and gameDeck.handPile == []:
+        if gameDeck.check_AutoComplete() == True:
+            userOpts = ['quit','play','autocomplete']
+        else:
+            userOpts = ['quit','play']
+    else:
+        userOpts = ['quit','play','draw']
+    #makeUI?
+    return gameDeck
+
+def quit_game(running,gameDeck):
+    # if userInput == "quit":
+    startVal = "finish"
+    return False, gameDeck
+def autocomplete(gameDeck):
+    # elif userInput == "autocomplete":
+    if gameDeck.check_AutoComplete() == True:
+        gameDeck.run_AutoComplete()
+        startVal = "finish"
+        return False, gameDeck
+    else:
+        return True, gameDeck
+    
+def draw_cards(gameDeck):
+    gameDeck.deal_Hand()
+    gameDeck.set_HandBoard()
+    return gameDeck
+# def play_cards(running,gameDeck):
+#     # elif userInput == "play":
+#         userInput = input("h = Play from Hand | b = Play from Board | OR Enter Card Name\n>  ")
+#         if userInput.lower() == "h":
+#             if gameDeck.activeHandCard != None:
+#                 cardMoving = gameDeck.activeHandCard
+#                 cardMovingLoc = "hand"
+#                 cardMovingPack = [cardMoving]
+#             else:
+#                 print("No card in hand")
+#                 return
+#         else:
+#             if userInput.lower() == "b":
+#                 cardMovingOpt = input("Please type name of card as seen on screen within the brackets. (Ex: 10h,K-d,A-s,5-d)\n>  ") #need to change orientation
+#             else:
+#                 cardMovingOpt = userInput
+#             if len(cardMovingOpt) != 3:
+#                 print("Invalid choice")
+#                 return
+#             results = gameDeck.check_cardChoice(cardMovingOpt)
+#             if results != None:
+#                 cardMovingLoc, cardMoving, cardMovingPack = gameDeck.check_cardChoice(cardMovingOpt)
+#             else:
+#                 print("Error finding card.")
+#                 return
+#         userInput = input(f"{cardMoving} selected.\nWhere would you like to move card to?\nAces board or main Board? (Type a column number to quick move)\na/b >  ")
+#         if userInput.lower() == "a":
+#             #check if card is trapped.
+#             gameDeck.set_PlayableList(0)
+#             if cardMoving not in gameDeck.playableList:
+#                 print("Selected card cannot be moved to aces. Move other cards first.")
+#                 return
+#             elif type(cardMovingPack) == list and len(cardMovingPack)>1:
+#                 print("Only one card can be moved to the aces deck at a time.")
+#                 return
+#             else:
+#                 confirmation = gameDeck.check_ValidMoveAces(cardMoving)
+#         else:
+#             if userInput.lower() == "b":
+#                 gameDeck.set_PlayableList(1)
+#                 print(gameDeck.mainBoard)
+#                 userInput = input(f"Please type the column number you would like to move {cardMoving} to.\n>  ")
+#             else:
+#                 try:
+#                     gameDeck.set_PlayableList(1)
+#                     userInput = int(userInput)
+#                 except ValueError:
+#                     print("Invalid Input")
+#                     return
+
+#             if len(cardMovingPack) > 1:
+#                 cardMoving = cardMovingPack
+#             colName = f"Col {userInput}"
+#             confirmation = gameDeck.check_ValidMoveBoard(cardMoving,colName)
+#         if confirmation == True:
+#             #remove cardMoving from whatever list it was in
+#             gameDeck.resolve_Move(cardMovingLoc,cardMoving,cardMovingPack)
+#             print("Move complete.")
+#             if gameDeck.check_Win() == True:
+#                 startVal = "finish"
+#                 return startVal
+#             return
+#         else:
+#             print("Move could not complete.")
+#             return
 
 def playing(startVal,gameDeck):
     if gameDeck.acesBoard == None:
@@ -654,9 +768,18 @@ def SolitareMenu():
     print(f"Time to complete: {finishTime}\nTotal moves: {gameDeck.moveCt}")
     newGameReset(SolitareMenu)
 
+def Solitare_game(pg):
+    startTime = datetime.now()
+    gameDeck = HouseDeck()
+    gameDeck.deckList = gameDeck.make_a_deck()
+    gameDeck.set_Board()
+
+    return gameDeck
 # def get_deck_view(pg):
 #     #Make foundation
 #     pg = 
+# def make_a_button(pg,buttonText,color,button_loc='center'):
+#     pg.draw.rect(screen,color,TABLE_SIZE,)
 
 
 #     return pg
@@ -667,19 +790,25 @@ if __name__ == "__main__":
     pg.init()
     screen = pg.display.set_mode((1280, 720))
     clock = pg.time.Clock()
-    running = True
+    running = False
+    score = 0
+
     dt = 0
     font = pg.font.SysFont('Courier Screenplay', 20)
     player_pos = pg.Vector2(screen.get_width() / 2, screen.get_height() / 2)
     color_opt = 'white'
     focus_card = None
+    startTime = None
+    gameDeck = None
+    
 
-    while running:
+    while True:
         # poll for events
         # pygame.QUIT event means the user clicked X to close your window
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
+                pg.quit()
             if event.type == pg.MOUSEBUTTONDOWN:
                 color_opt = 'blue'
                 # focus_card = get_focus()
@@ -690,7 +819,15 @@ if __name__ == "__main__":
 
         # fill the screen with a color to wipe away anything from last frame
         screen.fill("black")
-        SolitareMenu()
+        if running == True:
+            gameDeck, userOpts = playing_game(gameDeck)
+            print(userOpts)
+            #render manager
+        # if running == False:
+        #     #check new game
+        #     if event.type = 
+        #     Solitare_game(pg)
+        
         # pg = get_deck_view(pg)
         # pg.draw.rect(screen,'gray',[50,50,60,100],0)
         # # pg.draw.rect(screen,'gray',[100,50,60,100],0)
@@ -709,8 +846,18 @@ if __name__ == "__main__":
         # isClick = 
         # if isClick:
         #     color_opt = 'blue'
+        if running == False :
+            #check new game
+            if keys[pg.K_SPACE]:
+                running = True
+                gameDeck, startTime = Solitare_game(pg)
+                #change manager?
         if keys[pg.K_q]:
             running = False
+            pg.quit()
+            #restart menu manager
+            #check restart
+        
 
         # if pg.BUTTON_LEFT:
 

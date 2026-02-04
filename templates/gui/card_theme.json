@@ -1,0 +1,13 @@
+{
+    "card_obj":
+    {
+        "size": [60,100],
+        "front_color":"White",
+        "back_color":"Blue",
+        "text_color":"Black",
+        "Suit_heart":"red",
+        "suit_spade":"black",
+        "suit_diamond":"red",
+        "suit_club":"black"
+                }
+}
